@@ -149,6 +149,24 @@
     background:var(--txt);color:#fff;padding:13px 22px;border-radius:14px;font-weight:600;font-size:14px;
     opacity:0;pointer-events:none;transition:.28s;z-index:99}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  .chev{color:var(--dim);font-weight:600;margin-left:6px}
+  .backbtn{background:none;border:none;color:var(--mut);font-size:14px;font-weight:600;display:flex;align-items:center;
+    gap:5px;cursor:pointer;font-family:inherit;margin-bottom:16px;padding:4px 0;letter-spacing:-.01em}
+  .backbtn svg{width:19px;height:19px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .dtitle{font-size:27px;font-weight:700;letter-spacing:-.03em;line-height:1.12;margin:8px 0 18px}
+  .sumrow{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:6px}
+  .sumchip{background:var(--s1);border:1px solid var(--line);border-radius:13px;padding:9px 13px;box-shadow:var(--sh)}
+  .sumchip span{display:block;font-size:11px;color:var(--dim);font-weight:500;margin-bottom:2px}
+  .sumchip b{font-size:14.5px;font-weight:600}
+  .seg-step{display:flex;gap:13px;padding:15px 2px;border-top:1px solid var(--line)}
+  .seg-step:first-child{border-top:none}
+  .nbox{width:27px;height:27px;border-radius:9px;background:var(--s2);display:grid;place-items:center;font-size:13px;font-weight:700;flex:none}
+  .sbody{flex:1;min-width:0}
+  .sn{font-size:15px;font-weight:600}
+  .sm{font-size:13px;color:var(--mut);margin-top:2px}
+  .sbody ul{margin:9px 0 0;padding-left:17px}
+  .sbody li{font-size:13px;color:#4a4a4f;line-height:1.65}
 </style>
 </head>
 <body>
@@ -285,6 +303,12 @@
       <p>8 corridas de 1 km alternadas com 8 estações: SkiErg, empurrar e puxar trenó, burpee broad jumps, remo, farmer's carry, lunges com sandbag e wall balls. A preparação combina <b>base aeróbica</b> com <b>força funcional resistente</b>.</p>
     </div>
   </section>
+
+  <!-- DETALHE DO TREINO -->
+  <section class="view" id="v-detail">
+    <button class="backbtn" onclick="backDetail()"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>Voltar</button>
+    <div id="detailBody"></div>
+  </section>
 </div>
 
 <nav>
@@ -315,14 +339,32 @@ const TYPES={
 };
 const STYLES=["Força","Hipertrofia","Resistência","Cardio","Mobilidade","Core","Sup.","Inf.","Full body","Técnica","HIIT","Corrida longa","Tiros"];
 
-const SCHED_VERSION=3;
+const SESSION_TIROS={
+  title:"Intervalado · 9 km em ritmo",
+  summary:[
+    {k:"Volume em ritmo",v:"9 km"},
+    {k:"Pace alvo",v:"4:10–4:28 /km"},
+    {k:"Tempo est.",v:"~1h07"},
+    {k:"Carga",v:"60 TSS"},
+  ],
+  segments:[
+    {n:"Aquecimento",m:"15 min · Zona 1",bullets:["Trote leve, 5:21–6:03 /km"]},
+    {n:"3 séries de ritmo",m:"3 × (3 × 1 km)",bullets:[
+      "1 km a 4:10–4:28 /km (Zona 3)",
+      "30 s de intervalo entre cada tiro",
+      "2 min parado entre as séries"]},
+    {n:"Desaquecimento",m:"5 min · Zona 1",bullets:[]},
+  ]
+};
+
+const SCHED_VERSION=4;
 const DEFAULT_SCHEDULE=[
   {day:1,type:"musculacao",time:"12:00",note:""},
   {day:1,type:"corrida",time:"19:00",note:"Base aeróbica · Zona 2"},
   {day:2,type:"calistenia",time:"08:30",note:""},
   {day:2,type:"pilates",time:"18:00",note:""},
   {day:3,type:"musculacao",time:"12:00",note:""},
-  {day:3,type:"corrida",time:"19:00",note:"Tiros / intervalado"},
+  {day:3,type:"corrida",time:"19:00",note:"Tiros · 9 km em ritmo",workout:SESSION_TIROS},
   {day:4,type:"cardio",time:"07:00",note:"Remo / bike / SkiErg"},
   {day:4,type:"funcional",time:"18:00",note:""},
   {day:5,type:"calistenia",time:"08:30",note:""},
@@ -386,9 +428,9 @@ function dot(c){return `<span class="dot" style="background:${c}"></span>`;}
 
 function slotHTML(s){
   const t=TYPES[s.type]||TYPES.funcional;
-  const wk=weekKey(todayISO()), ck=db.checks[wk]||{}, id=s.day+"_"+s.time+"_"+s.type, done=ck[id];
+  const wk=weekKey(todayISO()), ck=db.checks[wk]||{}, id=s.day+"_"+s.time+"_"+s.type, done=ck[id], hw=!!s.workout;
   return `<div class="slot">${dot(t.color)}
-    <div class="meta"><div class="nm">${t.label}</div><div class="sb">${s.time}${s.note?" · "+s.note:""}</div></div>
+    <div class="meta" ${hw?`onclick="openDetail(${s.day},'${s.time}','${s.type}')" style="cursor:pointer"`:''}><div class="nm">${t.label}${hw?'<span class="chev">›</span>':''}</div><div class="sb">${s.time}${s.note?" · "+s.note:""}</div></div>
     <button class="tick ${done?'done':''}" onclick="toggleCheck('${id}')"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></button>
   </div>`;
 }
@@ -411,7 +453,33 @@ function calcStreak(){
     if(set.has(iso)){streak++;d.setDate(d.getDate()-1);}else break;}
   return streak;
 }
-function toggleCheck(id){const wk=weekKey(todayISO());if(!db.checks[wk])db.checks[wk]={};db.checks[wk][id]=!db.checks[wk][id];save();renderToday();renderStats();}
+function toggleCheck(id){const wk=weekKey(todayISO());if(!db.checks[wk])db.checks[wk]={};db.checks[wk][id]=!db.checks[wk][id];save();renderToday();renderStats();renderSchedule();}
+
+let detailKey=null, detailBack='home';
+function findSlot(day,time,type){return db.schedule.find(x=>x.day===day&&x.time===time&&x.type===type);}
+function openDetail(day,time,type){
+  const s=findSlot(day,time,type); if(!s||!s.workout) return;
+  detailKey={day,time,type};
+  const active=document.querySelector('.view.on'); detailBack=active?active.id.replace('v-',''):'home';
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("on"));
+  document.getElementById("v-detail").classList.add("on");
+  document.querySelectorAll("nav button").forEach(b=>b.classList.remove("on"));
+  window.scrollTo(0,0); renderDetail(s);
+}
+function backDetail(){go(detailBack);}
+function renderDetail(s){
+  const t=TYPES[s.type]||TYPES.funcional, w=s.workout;
+  const id=s.day+"_"+s.time+"_"+s.type, done=(db.checks[weekKey(todayISO())]||{})[id];
+  let h=`<div class="eyebrow" style="display:flex;align-items:center;gap:7px">${dot(t.color)}${t.label} · ${s.time}</div>`;
+  h+=`<div class="dtitle">${w.title}</div>`;
+  h+=`<div class="sumrow">`+w.summary.map(x=>`<div class="sumchip"><span>${x.k}</span><b>${x.v}</b></div>`).join("")+`</div>`;
+  h+=`<div class="eyebrow" style="margin-top:24px">Estrutura</div><div class="card" style="padding:4px 18px">`;
+  h+=w.segments.map((g,i)=>`<div class="seg-step"><div class="nbox">${i+1}</div><div class="sbody"><div class="sn">${g.n}</div><div class="sm">${g.m}</div>${g.bullets&&g.bullets.length?`<ul>${g.bullets.map(b=>`<li>${b}</li>`).join("")}</ul>`:""}</div></div>`).join("");
+  h+=`</div>`;
+  h+=`<button class="btn ${done?'sec':'accent'}" onclick="toggleDetailDone()">${done?'✓ Concluído — toque pra desmarcar':'Marcar como concluído'}</button>`;
+  document.getElementById("detailBody").innerHTML=h;
+}
+function toggleDetailDone(){toggleCheck(detailKey.day+"_"+detailKey.time+"_"+detailKey.type);renderDetail(findSlot(detailKey.day,detailKey.time,detailKey.type));}
 
 function renderSchedule(){
   const el=document.getElementById("schedule"),todayDow=new Date().getDay(),editing=document.getElementById("editor").style.display!=="none";
@@ -426,9 +494,9 @@ function renderSchedule(){
   el.innerHTML=html;
 }
 function schedRow(s,editing){
-  const t=TYPES[s.type]||TYPES.funcional;
+  const t=TYPES[s.type]||TYPES.funcional, hw=!!s.workout&&!editing;
   return `<div class="slot">${dot(t.color)}
-    <div class="meta"><div class="nm">${t.label}</div><div class="sb">${s.time}${s.note?" · "+s.note:""}</div></div>
+    <div class="meta" ${hw?`onclick="openDetail(${s.day},'${s.time}','${s.type}')" style="cursor:pointer"`:''}><div class="nm">${t.label}${hw?'<span class="chev">›</span>':''}</div><div class="sb">${s.time}${s.note?" · "+s.note:""}</div></div>
     ${editing?`<button class="delx" onclick="removeSlot(${s.day},'${s.time}','${s.type}')">×</button>`:""}
   </div>`;
 }
