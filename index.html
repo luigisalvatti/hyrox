@@ -354,10 +354,11 @@ const SESSION_TIROS={
       "30 s de intervalo entre cada tiro",
       "2 min parado entre as séries"]},
     {n:"Desaquecimento",m:"5 min · Zona 1",bullets:[]},
-  ]
+  ],
+  garmin:"Intervalado · 9 km em ritmo\n\n1) Aquecimento — Tempo 15:00 (Zona 1)\n\n2) Repetir 3×:\n   • Correr — 1,00 km — Ritmo 4:10–4:28 /km\n   • Recuperação — Tempo 0:30\n   • Correr — 1,00 km — Ritmo 4:10–4:28 /km\n   • Recuperação — Tempo 0:30\n   • Correr — 1,00 km — Ritmo 4:10–4:28 /km\n   • Recuperação — Tempo 2:00\n\n3) Desaquecimento — Tempo 5:00 (Zona 1)"
 };
 
-const SCHED_VERSION=4;
+const SCHED_VERSION=5;
 const DEFAULT_SCHEDULE=[
   {day:1,type:"musculacao",time:"12:00",note:""},
   {day:1,type:"corrida",time:"19:00",note:"Base aeróbica · Zona 2"},
@@ -477,7 +478,15 @@ function renderDetail(s){
   h+=w.segments.map((g,i)=>`<div class="seg-step"><div class="nbox">${i+1}</div><div class="sbody"><div class="sn">${g.n}</div><div class="sm">${g.m}</div>${g.bullets&&g.bullets.length?`<ul>${g.bullets.map(b=>`<li>${b}</li>`).join("")}</ul>`:""}</div></div>`).join("");
   h+=`</div>`;
   h+=`<button class="btn ${done?'sec':'accent'}" onclick="toggleDetailDone()">${done?'✓ Concluído — toque pra desmarcar':'Marcar como concluído'}</button>`;
+  if(w.garmin) h+=`<button class="btn sec" onclick="copyGarmin()" style="margin-top:10px">Copiar passo a passo (Garmin)</button>`;
   document.getElementById("detailBody").innerHTML=h;
+}
+function copyGarmin(){
+  const s=findSlot(detailKey.day,detailKey.time,detailKey.type);
+  if(!s||!s.workout||!s.workout.garmin) return;
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(s.workout.garmin).then(()=>toast("Treino copiado")).catch(()=>toast("Copie manualmente"));
+  } else toast("Copie manualmente");
 }
 function toggleDetailDone(){toggleCheck(detailKey.day+"_"+detailKey.time+"_"+detailKey.type);renderDetail(findSlot(detailKey.day,detailKey.time,detailKey.type));}
 
