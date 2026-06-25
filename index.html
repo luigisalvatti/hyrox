@@ -359,7 +359,26 @@ const SESSION_TIROS={
   garmin:"Intervalado · 3 × 1 km\n\n1) Aquecimento — Tempo 10:00\n\n2) Repetir 3×:\n   • Correr — 1,00 km — Ritmo 4:00 /km\n   • Recuperação — Tempo 3:00 (ignorar a última)\n\n3) Desaquecimento — Tempo 5:00"
 };
 
-const SCHED_VERSION=6;
+const SESSION_FUNCIONAL={
+  title:"Funcional Hyrox · Força",
+  summary:[
+    {k:"Duração",v:"~1 h"},
+    {k:"Tipo",v:"Força / estações"},
+    {k:"Intervalo",v:"30 s / 2 min"},
+  ],
+  segments:[
+    {n:"Aquecimento",m:"3 rounds",bullets:[
+      "20 pogo jumps","20 sapinhos","20 mountain climbers","20 agachamentos com salto"]},
+    {n:"SkiErg",m:"3 × 1 min · Z4",bullets:["30 s de intervalo entre tiros","2 min entre as séries"]},
+    {n:"Remo",m:"3 × 1 min · Z4",bullets:["30 s de intervalo entre tiros","2 min entre as séries"]},
+    {n:"Lunge",m:"3 × 1 min · ritmo de prova",bullets:["30 s de intervalo entre tiros","2 min entre as séries"]},
+    {n:"DB Snatch",m:"3 × 1 min",bullets:["30 s de intervalo entre tiros","2 min de intervalo"]},
+    {n:"Teste final",m:"Melhor tempo · sem pausa entre equipamentos",bullets:[
+      "Ski 1 km","+ 50 m Sled Push (carga de prova)"]},
+  ]
+};
+
+const SCHED_VERSION=7;
 const DEFAULT_SCHEDULE=[
   {day:1,type:"musculacao",time:"12:00",note:""},
   {day:1,type:"corrida",time:"19:00",note:"Base Zona 2 · máx 3 km"},
@@ -370,7 +389,7 @@ const DEFAULT_SCHEDULE=[
   {day:3,type:"musculacao",time:"12:00",note:""},
   {day:3,type:"corrida",time:"19:00",note:"Tiros · 3 × 1 km",workout:SESSION_TIROS},
   {day:3,type:"abs",time:"19:45",note:"Core · six-pack"},
-  {day:4,type:"funcional",time:"18:00",note:"Hyrox"},
+  {day:4,type:"funcional",time:"12:00",note:"Hyrox · Força",workout:SESSION_FUNCIONAL},
   {day:4,type:"abs",time:"19:15",note:"Core · six-pack"},
   {day:4,type:"cardio",time:"20:00",note:"Remo/bike/SkiErg · noite"},
   {day:5,type:"calistenia",time:"08:30",note:""},
