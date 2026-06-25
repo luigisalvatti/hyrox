@@ -334,42 +334,48 @@ const TYPES={
   pilates:{label:"Pilates",color:"#9b7bf0"},
   corrida:{label:"Corrida",color:"#11b988"},
   cardio:{label:"Cardio",color:"#10bcbc"},
+  abs:{label:"Abs / Core",color:"#e0518a"},
   hyrox:{label:"Hyrox / estações",color:"#eaa600"},
   descanso:{label:"Descanso",color:"#a6a6ab"},
 };
 const STYLES=["Força","Hipertrofia","Resistência","Cardio","Mobilidade","Core","Sup.","Inf.","Full body","Técnica","HIIT","Corrida longa","Tiros"];
 
 const SESSION_TIROS={
-  title:"Intervalado · 9 km em ritmo",
+  title:"Intervalado · 3 × 1 km",
   summary:[
-    {k:"Volume em ritmo",v:"9 km"},
-    {k:"Pace alvo",v:"4:10–4:28 /km"},
-    {k:"Tempo est.",v:"~1h07"},
-    {k:"Carga",v:"60 TSS"},
+    {k:"Volume em ritmo",v:"3 km"},
+    {k:"Pace alvo",v:"4:00 /km"},
+    {k:"Descanso",v:"3 min"},
+    {k:"Teto",v:"máx 3 km"},
   ],
   segments:[
-    {n:"Aquecimento",m:"15 min · Zona 1",bullets:["Trote leve, 5:21–6:03 /km"]},
-    {n:"3 séries de ritmo",m:"3 × (3 × 1 km)",bullets:[
-      "1 km a 4:10–4:28 /km (Zona 3)",
-      "30 s de intervalo entre cada tiro",
-      "2 min parado entre as séries"]},
-    {n:"Desaquecimento",m:"5 min · Zona 1",bullets:[]},
+    {n:"Aquecimento",m:"10 min · leve",bullets:["Trote leve + mobilidade"]},
+    {n:"3 × 1 km no ritmo",m:"4:00 /km",bullets:[
+      "1 km a 4:00 /km",
+      "3 min de descanso entre cada",
+      "último descanso pode pular"]},
+    {n:"Desaquecimento",m:"5 min · leve",bullets:[]},
   ],
-  garmin:"Intervalado · 9 km em ritmo\n\n1) Aquecimento — Tempo 15:00 (Zona 1)\n\n2) Repetir 3×:\n   • Correr — 1,00 km — Ritmo 4:10–4:28 /km\n   • Recuperação — Tempo 0:30\n   • Correr — 1,00 km — Ritmo 4:10–4:28 /km\n   • Recuperação — Tempo 0:30\n   • Correr — 1,00 km — Ritmo 4:10–4:28 /km\n   • Recuperação — Tempo 2:00\n\n3) Desaquecimento — Tempo 5:00 (Zona 1)"
+  garmin:"Intervalado · 3 × 1 km\n\n1) Aquecimento — Tempo 10:00\n\n2) Repetir 3×:\n   • Correr — 1,00 km — Ritmo 4:00 /km\n   • Recuperação — Tempo 3:00 (ignorar a última)\n\n3) Desaquecimento — Tempo 5:00"
 };
 
-const SCHED_VERSION=5;
+const SCHED_VERSION=6;
 const DEFAULT_SCHEDULE=[
   {day:1,type:"musculacao",time:"12:00",note:""},
-  {day:1,type:"corrida",time:"19:00",note:"Base aeróbica · Zona 2"},
+  {day:1,type:"corrida",time:"19:00",note:"Base Zona 2 · máx 3 km"},
+  {day:1,type:"abs",time:"19:45",note:"Core · six-pack"},
   {day:2,type:"calistenia",time:"08:30",note:""},
   {day:2,type:"pilates",time:"18:00",note:""},
+  {day:2,type:"abs",time:"19:15",note:"Core · six-pack"},
   {day:3,type:"musculacao",time:"12:00",note:""},
-  {day:3,type:"corrida",time:"19:00",note:"Tiros · 9 km em ritmo",workout:SESSION_TIROS},
-  {day:4,type:"cardio",time:"07:00",note:"Remo / bike / SkiErg"},
-  {day:4,type:"funcional",time:"18:00",note:""},
+  {day:3,type:"corrida",time:"19:00",note:"Tiros · 3 × 1 km",workout:SESSION_TIROS},
+  {day:3,type:"abs",time:"19:45",note:"Core · six-pack"},
+  {day:4,type:"funcional",time:"18:00",note:"Hyrox"},
+  {day:4,type:"abs",time:"19:15",note:"Core · six-pack"},
+  {day:4,type:"cardio",time:"20:00",note:"Remo/bike/SkiErg · noite"},
   {day:5,type:"calistenia",time:"08:30",note:""},
   {day:5,type:"pilates",time:"13:00",note:""},
+  {day:5,type:"abs",time:"14:00",note:"Core · six-pack"},
 ];
 
 const LS="hyroxAppV1";
